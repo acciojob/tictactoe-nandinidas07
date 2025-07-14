@@ -31,11 +31,12 @@ function makeMove(index, cell) {
   board[index] = currentPlayer;
   cell.innerText = currentPlayer;
 
-  if (checkWin()) {
+  const winnerPattern = checkWin();
+  if (winnerPattern) {
     gameOver = true;
     const winner = currentPlayer === "X" ? player1Name : player2Name;
     document.getElementById("message").innerText = ${winner}, congratulations you won!;
-    highlightWinningCells();
+    highlightWinningCells(winnerPattern);
     return;
   }
 
@@ -47,11 +48,10 @@ function makeMove(index, cell) {
 
 function checkWin() {
   const winPatterns = [
-    [0,1,2], [3,4,5], [6,7,8], // rows
-    [0,3,6], [1,4,7], [2,5,8], // cols
-    [0,4,8], [2,4,6]           // diagonals
+    [0,1,2], [3,4,5], [6,7,8],
+    [0,3,6], [1,4,7], [2,5,8],
+    [0,4,8], [2,4,6]
   ];
-
   for (let pattern of winPatterns) {
     const [a, b, c] = pattern;
     if (board[a] && board[a] === board[b] && board[a] === board[c]) {
@@ -61,10 +61,8 @@ function checkWin() {
   return null;
 }
 
-function highlightWinningCells() {
-  const winningPattern = checkWin();
-  if (!winningPattern) return;
-  for (let index of winningPattern) {
+function highlightWinningCells(pattern) {
+  for (let index of pattern) {
     document.getElementById(index).classList.add("winner");
   }
 }
