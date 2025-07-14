@@ -14,7 +14,7 @@ document.getElementById("submit").addEventListener("click", () => {
   document.getElementById("message").innerText = ${player1Name}, you're up;
 
   const boardDiv = document.getElementById("board");
-  boardDiv.innerHTML = ""; // clear previous
+  boardDiv.innerHTML = "";
 
   for (let i = 0; i < 9; i++) {
     const cell = document.createElement("div");
@@ -40,7 +40,6 @@ function makeMove(index, cell) {
     return;
   }
 
-  // Switch player
   currentPlayer = currentPlayer === "X" ? "O" : "X";
   const nextPlayer = currentPlayer === "X" ? player1Name : player2Name;
   document.getElementById("message").innerText = ${nextPlayer}, you're up;
