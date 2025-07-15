@@ -6,14 +6,20 @@
 </head>
 <body>
   <div class="container">
-    <h1>TIC TAC TOE</h1>
-    
+    <h1>Tic Tac Toe</h1>
+
+    <!-- Player name input section -->
     <div class="input-section" id="input-section">
-      <label>Player 1 <input type="text" id="player-1" placeholder="enter name" /></label>
-      <label>Player 2 <input type="text" id="player-2" placeholder="enter name" /></label>
-      <button id="start-btn">Start Game</button>
+      <label for="player1">Player 1</label>
+      <input type="text" id="player1" placeholder="enter name" />
+
+      <label for="player2">Player 2</label>
+      <input type="text" id="player2" placeholder="enter name" />
+
+      <button id="submit">Start Game</button>
     </div>
 
+    <!-- Game board section -->
     <div class="game-section hidden" id="game-section">
       <div class="message" id="message"></div>
       <div class="board" id="board">

@@ -1,60 +1,65 @@
 let currentPlayer = 'X';
 let players = {};
-let gameActive = false;
 let board = Array(9).fill(null);
-const winPatterns = [
-  [0,1,2], [3,4,5], [6,7,8],
-  [0,3,6], [1,4,7], [2,5,8],
-  [0,4,8], [2,4,6]
-];
+let gameActive = false;
 
-document.getElementById('start-btn').addEventListener('click', startGame);
+const messageEl = document.getElementById('message');
+const boardEl = document.getElementById('board');
+const inputSection = document.getElementById('input-section');
+const gameSection = document.getElementById('game-section');
+
+document.getElementById('submit').addEventListener('click', startGame);
 
 function startGame() {
-  const p1 = document.getElementById('player-1').value.trim();
-  const p2 = document.getElementById('player-2').value.trim();
+  const p1 = document.getElementById('player1').value.trim();
+  const p2 = document.getElementById('player2').value.trim();
+
   if (!p1 || !p2) {
-    alert('Enter both player names!');
+    alert('Please enter names for both players.');
     return;
   }
 
-  players = { X: p1, O: p2 };
-  gameActive = true;
-  currentPlayer = 'X';
-  board.fill(null);
+  players = {
+    X: p1,
+    O: p2
+  };
 
-  document.getElementById('input-section').classList.add('hidden');
-  document.getElementById('game-section').classList.remove('hidden');
+  currentPlayer = 'X';
+  board = Array(9).fill(null);
+  gameActive = true;
+
+  inputSection.classList.add('hidden');
+  gameSection.classList.remove('hidden');
   updateMessage(${players[currentPlayer]}, you're up);
-  createBoard();
+  drawBoard();
 }
 
-function createBoard() {
-  const boardEl = document.getElementById('board');
+function drawBoard() {
   boardEl.innerHTML = '';
+
   for (let i = 0; i < 9; i++) {
     const cell = document.createElement('div');
-    cell.className = 'cell';
-    cell.dataset.index = i;
-    cell.addEventListener('click', handleCellClick);
+    cell.classList.add('cell');
+    cell.setAttribute('id', i); // for Cypress: cy.get('#0'), etc.
+    cell.addEventListener('click', () => handleClick(i));
     boardEl.appendChild(cell);
   }
 }
 
-function handleCellClick(e) {
-  const index = e.target.dataset.index;
+function handleClick(index) {
   if (!gameActive || board[index]) return;
 
   board[index] = currentPlayer;
-  e.target.textContent = currentPlayer;
+  const cellEl = document.getElementById(index);
+  cellEl.textContent = currentPlayer;
 
-  const winner = checkWinner();
-  if (winner) {
+  if (checkWinner()) {
     gameActive = false;
-    updateMessage(${players[winner]}, congratulations you won!);
-    highlightWinningCells(winner);
-  } else if (board.every(cell => cell)) {
-    updateMessage('It\'s a draw!');
+    updateMessage(${players[currentPlayer]} congratulations you won!);
+    highlightWinningCells();
+  } else if (board.every(cell => cell !== null)) {
+    gameActive = false;
+    updateMessage("It's a draw!");
   } else {
     currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
     updateMessage(${players[currentPlayer]}, you're up);
@@ -62,27 +67,38 @@ function handleCellClick(e) {
 }
 
 function updateMessage(msg) {
-  document.getElementById('message').textContent = msg;
+  messageEl.textContent = msg;
 }
 
 function checkWinner() {
-  for (let pattern of winPatterns) {
+  const wins = [
+    [0,1,2], [3,4,5], [6,7,8],
+    [0,3,6], [1,4,7], [2,5,8],
+    [0,4,8], [2,4,6]
+  ];
+
+  for (let pattern of wins) {
     const [a, b, c] = pattern;
     if (board[a] && board[a] === board[b] && board[b] === board[c]) {
-      return board[a];
+      return true;
     }
   }
-  return null;
+  return false;
 }
 
-function highlightWinningCells(winner) {
-  for (let pattern of winPatterns) {
+function highlightWinningCells() {
+  const wins = [
+    [0,1,2], [3,4,5], [6,7,8],
+    [0,3,6], [1,4,7], [2,5,8],
+    [0,4,8], [2,4,6]
+  ];
+
+  for (let pattern of wins) {
     const [a, b, c] = pattern;
-    if (board[a] === winner && board[b] === winner && board[c] === winner) {
-      const cells = document.querySelectorAll('.cell');
-      cells[a].classList.add('winning');
-      cells[b].classList.add('winning');
-      cells[c].classList.add('winning');
+    if (board[a] && board[a] === board[b] && board[b] === board[c]) {
+      document.getElementById(a).classList.add('winning');
+      document.getElementById(b).classList.add('winning');
+      document.getElementById(c).classList.add('winning');
       break;
     }
   }
